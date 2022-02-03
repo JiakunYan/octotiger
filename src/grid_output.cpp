@@ -21,8 +21,9 @@
 
 // TODO (daissgr) Use this mutex or the one in hpx directly? (conflixing declaration here)
 // namespace hpx {
-// using mutex = hpx::lcos::local::spinlock;
 // }
+
+using mutex_t = hpx::lcos::local::spinlock;
 
 std::vector<std::vector<real>>& TLS_V();
 

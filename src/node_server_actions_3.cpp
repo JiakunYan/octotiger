@@ -626,7 +626,7 @@ future<real> node_server::local_step(integer steps) {
 	for (integer i = 0; i != steps; ++i) {
 
 		{
-			std::lock_guard<hpx::mutex> lock(node_count_mtx);
+			std::lock_guard<mutex_t> lock(node_count_mtx);
 			cumulative_node_count.total++;
 			if (!is_refined) {
 				cumulative_node_count.leaf++;

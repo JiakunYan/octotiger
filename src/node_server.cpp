@@ -33,13 +33,13 @@
 
 HPX_REGISTER_COMPONENT(hpx::components::managed_component<node_server>, node_server);
 
-hpx::mutex node_server::node_count_mtx;
+mutex_t node_server::node_count_mtx;
 node_count_type node_server::cumulative_node_count;
 bool node_server::static_initialized(false);
 std::atomic<integer> node_server::static_initializing(0);
 
 std::uint64_t node_server::cumulative_nodes_count(bool reset) {
-	std::lock_guard<hpx::mutex> lock(node_count_mtx);
+	std::lock_guard<mutex_t> lock(node_count_mtx);
 	if (reset) {
 		cumulative_node_count.total = 0;
 	}
@@ -47,7 +47,7 @@ std::uint64_t node_server::cumulative_nodes_count(bool reset) {
 }
 
 std::uint64_t node_server::cumulative_leafs_count(bool reset) {
-	std::lock_guard<hpx::mutex> lock(node_count_mtx);
+	std::lock_guard<mutex_t> lock(node_count_mtx);
 	if (reset) {
 		cumulative_node_count.leaf = 0;
 	}
@@ -55,7 +55,7 @@ std::uint64_t node_server::cumulative_leafs_count(bool reset) {
 }
 
 std::uint64_t node_server::cumulative_amrs_count(bool reset) {
-	std::lock_guard<hpx::mutex> lock(node_count_mtx);
+	std::lock_guard<mutex_t> lock(node_count_mtx);
 	if (reset) {
 		cumulative_node_count.amr_bnd = 0;
 	}

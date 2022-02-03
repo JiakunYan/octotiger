@@ -124,7 +124,7 @@ public:
 	static std::uint64_t cumulative_amrs_count(bool);
 	static void register_counters();
 private:
-	static hpx::mutex node_count_mtx;
+	static mutex_t node_count_mtx;
 	static node_count_type cumulative_node_count;
 	static bool static_initialized;
 	static std::atomic<integer> static_initializing;

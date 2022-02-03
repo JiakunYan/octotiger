@@ -25,8 +25,10 @@ constexpr integer spc_vac_i = spc_i + 4;
 
 // TODO (daissgr) mutex....
 // namespace hpx {
-// using mutex = hpx::lcos::local::spinlock;
 // }
+
+
+using mutex_t = hpx::lcos::local::spinlock;
 const real ssr0 = 1.0 / 3.0;
 
 init_func_type problem = nullptr;

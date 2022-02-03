@@ -33,8 +33,9 @@ struct node_count_type;
 
 // TODO (daissgr) Keep the hpx mutex or the local spinlock one here?
 // namespace hpx {
-//     using mutex = hpx::lcos::local::spinlock;
 // }
+
+using mutex_t = hpx::lcos::local::spinlock;
 
 class node_client
 {

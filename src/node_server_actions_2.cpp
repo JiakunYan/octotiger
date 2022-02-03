@@ -34,9 +34,9 @@ future<void> node_client::check_for_refinement(real omega, real r) const {
 }
 
 void node_server::check_for_refinement(real omega, real new_floor) {
-	static hpx::mutex mtx;
+	static mutex_t mtx;
 	{
-		std::lock_guard<hpx::mutex> lock(mtx);
+		std::lock_guard<mutex_t> lock(mtx);
 		grid::omega = omega;
 		if (new_floor > 0) {
 			opts().refinement_floor = new_floor;
@@ -551,7 +551,7 @@ future<hpx::id_type> node_client::get_child_client(const node_location &parent_l
 #ifdef OCTOTIGER_USE_NODE_CACHE
 		auto loc = parent_loc.get_child(ci);
 		table_type::iterator entry;
-		std::unique_lock<hpx::mutex> lock(node_cache_mutex);
+		std::unique_lock<mutex_t> lock(node_cache_mutex);
 		entry = node_cache.find(loc);
 		found = bool(entry != node_cache.end());
 		if (!found) {
