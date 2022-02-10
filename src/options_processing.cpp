@@ -137,6 +137,7 @@ bool options::process_options(int argc, char *argv[]) {
 	("reflect_bc", po::value<bool>(&(opts().reflect_bc))->default_value(false), "Reflecting Boundary Conditions") //
 	("cdisc_detect", po::value<bool>(&(opts().cdisc_detect))->default_value(true), "PPM contact discontinuity detection") //
 	("disable_output", po::value<bool>(&(opts().disable_output))->default_value(false), "disable silo output") //
+	("disable_analytic", po::value<bool>(&(opts().disable_analytic))->default_value(false), "disable analytic step") //
 	("disable_diagnostics", po::value<bool>(&(opts().disable_diagnostics))->default_value(false), "disable diagnostics") //
 	("problem", po::value<problem_type>(&(opts().problem))->default_value(NONE), "problem type")                            //
 	("restart_filename", po::value<std::string>(&(opts().restart_filename))->default_value(""), "restart filename")         //
@@ -373,6 +374,24 @@ bool options::process_options(int argc, char *argv[]) {
             << "(or move to kokkos device kernel with --monopole_device_kernel_type=KOKKOS_CUDA)" << std::endl;
             abort();
         }
+        if (opts().multipole_device_kernel_type == interaction_device_kernel_type::HIP &&
+            opts().multipole_host_kernel_type == interaction_host_kernel_type::KOKKOS) {
+            std::cerr << std::endl << "ERROR: "; 
+            std::cerr << "Due to a current implementation limitation in the load balancing, " 
+            << " multipole hip device kernels cannot be mixed with the respective kokkos host kernel!" << std::endl
+            << " Please choose a different host kernel "
+            << "(or move to kokkos device kernel with --multipole_device_kernel_type=KOKKOS_HIP)" << std::endl;
+            abort();
+        }
+        if (opts().monopole_device_kernel_type == interaction_device_kernel_type::HIP &&
+            opts().monopole_host_kernel_type == interaction_host_kernel_type::KOKKOS) {
+            std::cerr << std::endl << "ERROR: "; 
+            std::cerr << "Due to a current implementation limitation in the load balancing, " 
+            << " monopole hip device kernels cannot be mixed with the respective kokkos host kernel!" << std::endl
+            << " Please choose a different host kernel "
+            << "(or move to kokkos device kernel with --monopole_device_kernel_type=KOKKOS_HIP)" << std::endl;
+            abort();
+        }
 #ifndef OCTOTIGER_HAVE_VC
         if (opts().monopole_host_kernel_type == interaction_host_kernel_type::VC) {
             std::cerr << std::endl << "ERROR: "; 
@@ -438,6 +457,14 @@ bool options::process_options(int argc, char *argv[]) {
         << "Disable either the device kernel (OFF) or the host kernel (DEVICE_ONLY)." << std::endl;
         abort();
     }
+#ifdef OCTOTIGER_HAVE_HIP
+   if (opts().monopole_host_kernel_type == DEVICE_ONLY) {
+     std::cerr << "\nWARNING: Monopole DEVICE_ONLY is currently not fully supported in HIP builds!!" << std::endl;
+     std::cerr << "p2m kernel always executed on the cpu in this build..." << std::endl << std::endl;
+     sleep(10);
+   }
+
+#endif
 #endif
 
     return true;

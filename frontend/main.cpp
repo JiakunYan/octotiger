@@ -29,6 +29,10 @@
 
 #include <iostream>
 
+#ifdef OCTOTIGER_HAVE_HIP
+#warning "Experimental HIP Build! Do not (yet) use for production runs"
+#endif
+
 int hpx_main(int argc, char* argv[]) {
     // The ascii logo was created by combining, modifying and extending the ascii arts from:
     // http://ascii.co.uk/art/octopus (Author "jgs")
@@ -110,6 +114,9 @@ int hpx_main(int argc, char* argv[]) {
     printf("Note: Kokkos kernels are manually set to SCALAR as per CMAKE configuration!\n");
     printf("Note: Kokkos kernels are will not use explicit vectorization in this configuration!\n");
 #endif
+#ifdef OCTOTIGER_HAVE_HIP
+    printf("WARNING: Experimental HIP Build! Do not (yet) use for production runs!\n");
+#endif
     printf("###########################################################\n");
 
     printf("Running\n");
@@ -130,5 +137,8 @@ int main(int argc, char* argv[]) {
     };
     register_hpx_functions();
     hpx::init(argc, argv, p);
+#ifdef OCTOTIGER_HAVE_HIP
+    std::cout << std::endl << "WARNING: Experimental HIP Build! Do not (yet) use for production runs!\n" << std::endl;
+#endif
 }
 #endif
