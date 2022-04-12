@@ -53,6 +53,7 @@ pipeline {
                     sh '''
                     srun -p sgs-only -N 1 -n 1 -t 03:00:00 --exclusive bash -c "\
                     cd /scratch && \
+                    rm -rf jenkins && \
                     mkdir -p jenkins && cd jenkins; \
                     if [[ ! -d spack ]]; then git clone -b v0.17 --depth 1 https://github.com/spack/spack.git;fi; \
                     source spack/share/spack/setup-env.sh && \
