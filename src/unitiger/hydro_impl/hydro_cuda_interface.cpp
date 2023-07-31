@@ -300,7 +300,7 @@ timestep_t launch_hydro_cuda_kernels(const hydro_computer<NDIM, INX, physics<NDI
       hpx::apply(exec_slice, cudaMemcpyAsync,
           amax_d.data(), device_amax_d.device_side_buffer, number_slices * number_blocks * NDIM * sizeof(int),
           cudaMemcpyDeviceToHost);
-      auto flux_kernel_fut = hpx::async(exec_slice, cudaMemcpyAsync, f.data(), device_f.device_side_buffer,
+      auto flux_kernel_fut = hpx::async(exec_slice, &cudaMemcpyAsync, (void*) f.data(), (const void*)device_f.device_side_buffer,
           number_slices * (NDIM * nf_local * q_inx3 + 128) * sizeof(double), cudaMemcpyDeviceToHost);
       flux_kernel_fut.get();
 

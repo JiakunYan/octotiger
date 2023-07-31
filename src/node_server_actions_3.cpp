@@ -260,9 +260,6 @@ void line_of_centers_analyze(const line_of_centers_t &loc, real omega, std::pair
 }
 
 void node_server::execute_solver(bool scf, node_count_type ngrids) {
-	timings_.times_[timings::time_regrid] = 0.0;
-	timings_.times_[timings::time_fmm] = 0.0;
-	timings_.times_[timings::time_total] = 0.0;
 	integer output_cnt { };
 //	output_all("X", 0, false);
 
@@ -351,6 +348,9 @@ void node_server::execute_solver(bool scf, node_count_type ngrids) {
 	output_cnt = root_ptr->get_rotation_count() / output_dt;
 	printf("%e %e\n", root_ptr->get_rotation_count(), output_dt);
 
+    timings_.times_[timings::time_regrid] = 0.0;
+    timings_.times_[timings::time_fmm] = 0.0;
+    timings_.times_[timings::time_total] = 0.0;
 	real bench_start, bench_stop;
 	while (current_time < opts().stop_time) {
 		timings::scope ts(timings_, timings::time_total);
@@ -640,6 +640,7 @@ future<real> node_server::local_step(integer steps) {
 	for (integer i = 0; i != steps; ++i) {
 
 		{
+            // TODO: We can just use atomic operations here.
 			std::lock_guard<hpx::mutex> lock(node_count_mtx);
 			cumulative_node_count.total++;
 			if (!is_refined) {
@@ -660,8 +661,10 @@ future<real> node_server::local_step(integer steps) {
 			}
 		}
 
+        // TODO: Split it into two loops
 		fut = fut.then(hpx::launch::async_policy(hpx::threads::thread_priority::boost), hpx::annotated_function([this, i, steps](future<void> fut) -> real {
-			GET(fut);
+            // Q to HPX: future<void>?
+			GET(fut); // Q to OT: We do not need the result?
 			auto time_start = std::chrono::high_resolution_clock::now();
 			auto next_dt = timestep_driver_descend();
 
